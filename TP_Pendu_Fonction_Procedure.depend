@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1644924463 source:d:\projet_codeblocks\tp_pendu_fonction_procedure\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+

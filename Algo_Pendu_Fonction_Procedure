@@ -1,0 +1,181 @@
+Algorithme:Pendu
+
+//BUT:Lancer le jeu du pendu
+//ENTREE:les lettres donnes par l'utilisateur
+//SORTIE:victoire si mot trouve, defaite si pendu entierement visible
+
+CONST:
+	TAILLEMAX<-28  //Constante de la taille maximum du mot
+	TAILLEPENDU<-11 //Constante de la taille de la matrice permettant d'afficher le pendu
+
+VAR:
+	pv : ENTIER //pv en vriable globale afin qu'elle sois disponible partout
+
+PROCEDURE InitialisationMot (VAR mot : CHAINE, VAR motCache : CHAINE, VAR tailleMot : ENTIER) //Procédure permettant l'initialisation de du mot à trouver et du mot caché par des étoiles en fonction de sa 																								taille
+
+VAR: 
+	i : ENTIER
+
+DEBUTPROCEDURE
+	i<-0
+	ECRIRE "Veuillez entrer le mot a trouver en minuscule"
+	LIRE mot 				 //Demande puis lecture du mot à trouver
+	tailleMot<-LONGUEUR(mot) //stockage de la taille du mot
+	POUR i DE 1 A tailleMot PAS DE 1 //initialisation du mot caché par des * en fonction de la taille
+		FAIRE
+			motCache[i]<-'*'
+	FINPOUR
+	ECRIRE "Le mot est :" + motCache 
+FINPROCEDURE		 
+
+
+PROCEDURE Tour (tailleMot : ENTIER, VAR motCache : CHAINE, mot : CHAINE, VAR pv : ENTIER) //Cette procédure permet le déroulement d'un tour de jeu en comparant une lettre donné par l'utilisateur avec les 																							lettres du mot principal
+
+VAR:
+	i, erreur : ENTIER
+	lettre : CARACTERE
+
+DEBUTPROCEDURE
+	i<-0
+	erreur<-0
+	ECRIRE "Veuillez entrer un lettre en minuscule"  
+	LIRE lettre 			//Demande puis lecture de la lettre donné par l'utilisateur
+	POUR i DE 1 A tailleMot //Boucle permettant de comparer la lettre avec celles du mot
+	FAIRE
+		SI(lettre=mot[i])      
+		ALORS
+			motCache[i]<-lettre //Remplassement de la lettre dans le mot caché si elle sont la memes..
+		SINON
+			erreur<-(erreur+1) //..Augmentation de 1 pour erreur dans le cas contraire
+		FINSI
+	FINPOUR
+	SI (erreur == tailleMot)  //Si erreur est égal à la taille du mot cela signifie que la lettre n'est pas présent dans le mot et donc la perte d'un point de vie
+	ALORS
+		pv<-(pv-1)
+	FINSI
+	ECRIRE "Le mot est :" + motCache
+FINPROCEDURE
+
+
+PROCEDURE Potence (pv : ENTIER) //Procédure permettant l'initialisation pour le remplissage et l'affichage de la matrice contenant le pendu en fonction des pv
+
+VAR:
+	ligne, colonne : ENTIER
+	tabPendu: tableau [1..TAILLEPENDU][1..TAILLEPENDU]de CARACTERE
+
+DEBUTPROCEDURE
+
+	ligne<-0
+	colonne<-0
+	POUR ligne de 1 à TAILLEPENDU FAIRE PAS DE 1 	//Initialisation de la matrice
+		POUR colonne de 1 à TAILLEPENDU FAIRE PAS DE 1 
+			tabPendu[ligne,colonne]=' '
+		FINPOUR
+	FINPOUR
+
+	SI(pv<=9)					//Remplissage de la matrice avec des éléments du pendu en fonction des pv 		
+	ALORS
+		tabpendu[9][1]<-'-'
+		tabpendu[9][2]<-'-'
+		tabpendu[9][3]<-'-'
+		SI(pv<=8)
+		ALORS
+			tabpendu[5][2]<-'|'
+			tabpendu[6][2]<-'|'
+			tabpendu[7][2]<-'|'
+			tabpendu[8][2]<-'|'
+			SI(pv<=7)
+			ALORS
+				tabpendu[4][2]<-'_'
+				tabpendu[4][3]<-'_'
+				tabpendu[4][4]<-'_'
+				tabpendu[4][5]<-'_'
+				tabpendu[4][6]<-'_'
+				SI(pv<=6)
+				ALORS
+					tabpendu[5][6]<-'|'
+					SI(pv<=5)
+					ALORS
+						tabpendu[6][6]<-'0'
+						SI(pv<=4)
+						ALORS
+							tabpendu[7][6]<-'|'
+							SI(pv<=3)
+							ALORS
+								tabpendu[7][5]<-'/'
+								SI(pv<=2)
+								ALORS
+									tabpendu[7][7]<-'\'
+									SI(pv<=1)
+									ALORS
+										tabpendu[8][5]<-'/'
+										SI(pv<=0)
+										ALORS
+											tabpendu[8][7]<-'\'
+										FINSI
+									FINSI
+								FINSI
+							FINSI
+						FINSI
+					FINSI
+				FINSI
+			FINSI
+		FINSI
+	FINSI
+
+	POUR ligne de 1 à TAILLEPENDU FAIRE PAS DE 1 	//Affichage de la matrice
+		POUR colonne de 1 à TAILLEPENDU FAIRE PAS DE 1 
+			ECRIRE tabPendu[ligne,colonne]
+		FINPOUR
+	FINPOUR
+
+	ECRIRE "PV restant : " + pv //Affichage de nombre de pv restant 
+FINPROCEDURE
+
+
+FONCTION Defaite (pv : ENTIER, motCache : CHAINE, mot : CHAINE) : CHAINE //Fonction permettant de stoper la boucle si les pv sont a zero
+
+DEBUTFONCTION
+	SI(pv=0)											   
+	ALORS
+		Defaite<-mot
+	SINON
+		Defaite<-motCache
+	FINSI
+FINFONCTION
+
+
+PROCEDURE Fin (pv : ENTIER) //Procedure permettant l'affiche du message de victoire ou de défaite en fonction des pv à la sortie de la boucle principale
+
+DEBUTPROCEDURE
+	SI(pv=0)										
+	ALORS
+		ECRIRE "GAME OVER"
+	SINON
+		ECRIRE "FELICITATION!"
+	FINSI
+FINPROCEDURE
+
+
+//main
+	
+VAR:
+	tailleMot :ENTIER
+	motCache, mot :CHAINE					  	  				 
+
+DEBUT
+	pv<-10
+	InitialisationMot (mot, motCache, tailleMot) //Procédure d'initialisation au début du jeu
+
+	REPETER
+		Tour (tailleMot, motCache, mot, pv) //Procédure qui demande une lettre à l'utilisateur, la vérifie avec le mot et remplasse la lettre si nécessaire dans le mot caché
+		Potence (pv) 						//Procédure initialisant et affichant le pendu en fonction des pv
+		motCache<-Defaite(pv, motCache, mot) //Fonction modifiant le mot caché si les pv sont égale à zero
+	JUSQU'A(motCache=mot) 					//Fin de la boucle principale lorsque mot et mot caché sont égale 
+	Fin (pv) 								//Vérification des pv et affichage du texte de fin de jeu en fonction des pv
+	ECRIRE "Merci d'avoir joué!" 			//Remerciement de fin de jeu
+FIN
+
+
+
+
